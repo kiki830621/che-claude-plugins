@@ -1,0 +1,35 @@
+{
+  "name": "archive-mail",
+  "version": "1.0.0",
+  "description": "自動歸檔 Apple Mail 郵件到 Markdown 檔案，使用 Message-ID 精確去重",
+  "author": "Che Cheng",
+  "license": "MIT",
+  "repository": "",
+  "keywords": [
+    "email",
+    "apple-mail",
+    "archive",
+    "markdown",
+    "applescript",
+    "macos"
+  ],
+  "platforms": ["macos"],
+  "requirements": {
+    "tools": [
+      "Bash(osascript:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Read",
+      "Write",
+      "Glob",
+      "Edit"
+    ],
+    "applications": ["Mail.app"]
+  },
+  "commands": [
+    {
+      "name": "archive-mail",
+      "description": "歸檔指定寄件人的郵件到 communication/emails 目錄（含附件）"
+    }
+  ]
+}
