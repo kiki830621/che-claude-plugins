@@ -1,18 +1,28 @@
 {
   "name": "che-claude-plugins",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Che Cheng's Claude Code Plugin Marketplace - 學術研究與生產力工具",
   "author": "Che Cheng",
   "repository": "https://github.com/kiki830621/che-claude-plugins",
   "plugins": [
     {
       "name": "archive-mail",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "description": "自動歸檔 Apple Mail 郵件到 Markdown 檔案，使用 Message-ID 精確去重",
       "path": "plugins/archive-mail",
       "platforms": ["macos"],
-      "keywords": ["email", "apple-mail", "archive", "markdown", "applescript"],
-      "category": "productivity"
+      "keywords": ["email", "apple-mail", "archive", "markdown", "applescript", "setup"],
+      "category": "productivity",
+      "commands": [
+        {
+          "name": "archive-mail",
+          "description": "歸檔指定寄件人的郵件到目錄（含附件）"
+        },
+        {
+          "name": "setup-archive-mail",
+          "description": "為當前專案配置 /archive-mail（設定精靈）"
+        }
+      ]
     }
   ],
   "categories": {
