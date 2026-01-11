@@ -1,6 +1,6 @@
 {
   "name": "archive-mail",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "自動歸檔 Apple Mail 郵件到 Markdown 檔案，使用 Message-ID 精確去重",
   "author": "Che Cheng",
   "license": "MIT",
@@ -30,6 +30,10 @@
     {
       "name": "archive-mail",
       "description": "歸檔指定寄件人的郵件到 communication/emails 目錄（含附件）"
+    },
+    {
+      "name": "setup-archive-mail",
+      "description": "為當前專案配置 /archive-mail（設定聯絡人、目錄、索引）"
     }
   ]
 }
