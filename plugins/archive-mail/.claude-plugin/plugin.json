@@ -1,6 +1,6 @@
 {
   "name": "archive-mail",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "自動歸檔 Apple Mail 郵件到 Markdown 檔案，使用 Message-ID 精確去重",
   "author": "Che Cheng",
   "license": "MIT",

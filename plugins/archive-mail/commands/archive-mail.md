@@ -14,15 +14,24 @@ allowed-tools: Bash(osascript:*), Bash(ls:*), Bash(mkdir:*), Read, Write, Glob, 
 ```yaml
 # 必填設定
 account: "your-email@gmail.com"     # Mail.app 帳戶名稱
-mailbox: "全部郵件"                  # 信箱名稱（Gmail: 全部郵件, INBOX 等）
 output_dir: "communication/emails"  # 輸出目錄
 attachments_dir: "communication/attachments"  # 附件目錄
-index_file: "communication/.email_index.json" # Message-ID 索引檔
 
 # 過濾條件（至少填一個）
-sender_filters:
-  - "professor@university.edu"      # 寄件人包含此字串
+filters:
+  - "professor@university.edu"      # 寄件人/收件人包含此字串
   - "assistant@gmail.com"
+
+# === 進階設定（收/發分類）===
+# 若需要將收到和寄出的郵件分開存放：
+separate_by_direction: true         # 啟用收/發分類
+from_dir: "from_contact"            # 收到的郵件目錄
+to_dir: "to_contact"                # 寄出的郵件目錄
+from_index: ".email_index_from.json"  # 收信索引
+to_index: ".email_index_to.json"      # 寄信索引
+sent_mailbox: "寄件備份"              # 寄件匣名稱（Gmail）
+received_mailbox: "全部郵件"          # 收件匣名稱（Gmail）
+my_account: "my-email@gmail.com"      # 判斷寄/收的依據
 ```
 
 ---
