@@ -243,36 +243,85 @@ cat $1/Package.swift
 claude mcp list 2>&1 | grep -A1 "$1"
 ```
 
-### Step 2: 列出所有 tools
+### Step 2: 提取所有 Tools 定義
 
-查看 MCP Server 的 `Server.swift` 中的 `defineTools()` 方法。
+從 `Server.swift` 讀取 `defineTools()` 方法，提取所有 tool 名稱和參數：
 
-### Step 3: 測試基本功能
+```bash
+# 提取 tool 定義區塊
+grep -A 50 "func defineTools" $1/Sources/*/Server.swift | head -100
+```
 
-**直接呼叫 MCP tools 測試**（不是用 bash，是 LLM 直接呼叫）：
+**產生 Tool 清單**：
 
-#### 測試順序
+讀取程式碼後，產生一個完整的 tool 清單表格：
 
-1. **讀取類 tools（安全）**：先測試這類，不會改變資料
-   - `list_calendars`、`list_events`、`get_today` 等
+```markdown
+## Tool 清單（自動產生）
 
-2. **搜尋類 tools（安全）**：測試查詢功能
-   - `search_events`、`search_todos` 等
+| # | Tool 名稱 | 類型 | 必要參數 | 測試狀態 |
+|---|-----------|------|----------|----------|
+| 1 | list_xxx | 讀取 | 無 | ⏳ 待測 |
+| 2 | search_xxx | 搜尋 | query | ⏳ 待測 |
+| 3 | create_xxx | 寫入 | title, ... | ⏳ 待測 |
+...
+```
 
-3. **建立/修改類 tools（小心）**：會改變資料，謹慎測試
-   - `create_event`、`update_event`、`delete_event` 等
+**Tool 分類規則**：
+- `list_*`、`get_*` → 讀取類（安全，優先測試）
+- `search_*`、`find_*` → 搜尋類（安全）
+- `create_*`、`add_*` → 建立類（會改資料）
+- `update_*`、`edit_*` → 修改類（會改資料）
+- `delete_*`、`remove_*` → 刪除類（危險，最後測試或跳過）
 
-#### 測試範例
+### Step 3: 執行單元測試（全部 Tools）
 
-以 `che-ical-mcp` 為例，依序呼叫：
+**逐一測試每個 tool**，依照以下順序：
 
-| 順序 | Tool | 說明 |
-|------|------|------|
-| 1 | `mcp__che-ical-mcp__list_calendars` | 確認連線正常 |
-| 2 | `mcp__che-ical-mcp__list_events_quick` | 測試事件查詢 |
-| 3 | `mcp__che-ical-mcp__list_reminders` | 測試提醒事項 |
+#### 3.1 讀取類 Tools（先測）
 
-如果讀取類 tools 失敗，通常是**權限問題**，回到 B3 步驟檢查。
+對每個 `list_*` / `get_*` tool：
+1. 呼叫 tool（無參數或最小參數）
+2. 記錄結果：✅ 成功 / ❌ 失敗 + 錯誤訊息
+3. 如果失敗，判斷是**權限問題**還是**參數問題**
+
+#### 3.2 搜尋類 Tools
+
+對每個 `search_*` / `find_*` tool：
+1. 準備測試參數（如 `keyword: "test"`）
+2. 呼叫 tool
+3. 記錄結果
+
+#### 3.3 建立類 Tools（小心測試）
+
+對每個 `create_*` / `add_*` tool：
+1. 準備最小必要參數
+2. **詢問用戶是否要測試**（會產生真實資料）
+3. 如果測試，記得之後清理測試資料
+
+#### 3.4 修改/刪除類 Tools（通常跳過）
+
+- 這類 tools 需要真實 ID，且會改變資料
+- 通常在單元測試階段跳過，標記為「需手動測試」
+
+### Step 4: 更新測試狀態
+
+測試完成後，更新 Tool 清單的測試狀態欄位：
+
+```markdown
+| # | Tool 名稱 | 類型 | 必要參數 | 測試狀態 |
+|---|-----------|------|----------|----------|
+| 1 | list_calendars | 讀取 | 無 | ✅ PASS |
+| 2 | list_reminders | 讀取 | 無 | ❌ FAIL: access denied |
+| 3 | search_events | 搜尋 | keyword | ✅ PASS |
+| 4 | create_event | 建立 | title, start, end | ⏭️ 跳過 |
+...
+```
+
+**失敗處理**：
+- 如果讀取類 tools 失敗 → 回到 **B3 權限除錯**
+- 如果搜尋類 tools 失敗 → 檢查參數格式
+- 如果建立類 tools 失敗 → 檢查必要參數是否完整
 
 ---
 

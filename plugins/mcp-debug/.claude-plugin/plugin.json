@@ -1,6 +1,6 @@
 {
   "name": "mcp-debug",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "MCP Server 除錯方法論，支援多框架（AppleScript、EventKit 等）與權限診斷",
   "author": { "name": "Che Cheng" },
   "license": "MIT",
