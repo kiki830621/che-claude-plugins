@@ -72,6 +72,31 @@ che-claude-plugins/
 - 支援 `.shiny-tests.yaml` 定義測試案例
 - 同時觀察前端 UI 變化和後端 R 輸出
 
+### che-archive-lines (v1.0.0)
+
+**用途**: 自動化 LINE macOS 聊天記錄的歸檔
+
+**依賴**:
+- `cliclick` CLI 工具（`brew install cliclick`）
+- LINE macOS 已安裝並登入
+- Accessibility 權限
+
+**使用**:
+```bash
+/archive-lines calibrate   # 第一次使用：校準按鈕位置
+/archive-lines save        # 自動儲存當前聊天
+/archive-lines test        # 測試點擊位置
+```
+
+**功能**:
+- 自動化 LINE 的「儲存聊天」功能
+- 使用相對座標，視窗移動時自動調整
+- 設定儲存在 `~/.config/che-archive-lines/config.json`
+
+**技術說明**:
+- LINE 使用 Qt 框架，不支援 macOS Accessibility API
+- 使用 cliclick 進行座標點擊自動化
+
 ## MCP 依賴說明
 
 ### apple-mail MCP

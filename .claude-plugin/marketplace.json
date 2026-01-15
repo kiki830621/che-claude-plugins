@@ -15,7 +15,7 @@
       "author": {
         "name": "Che Cheng"
       },
-      "source": "plugins/archive-mail",
+      "source": "./plugins/archive-mail",
       "category": "productivity"
     },
     {
@@ -25,7 +25,7 @@
       "author": {
         "name": "Che Cheng"
       },
-      "source": "plugins/r-shiny-debugger",
+      "source": "./plugins/r-shiny-debugger",
       "category": "development"
     },
     {
@@ -35,7 +35,7 @@
       "author": {
         "name": "Che Cheng"
       },
-      "source": "plugins/che-archive-lines",
+      "source": "./plugins/che-archive-lines",
       "category": "productivity"
     },
     {
@@ -45,7 +45,7 @@
       "author": {
         "name": "Che Cheng"
       },
-      "source": "plugins/claude-config-guide",
+      "source": "./plugins/claude-config-guide",
       "category": "productivity"
     }
   ]
