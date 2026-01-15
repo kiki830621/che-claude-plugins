@@ -1,56 +1,71 @@
 # MCP Debug
 
-MCP Server 除錯方法論 Plugin，特別適用於使用 AppleScript 整合的 MCP Server。
+MCP Server 除錯與測試工具，支援 AppleScript 和 EventKit 框架。
 
-## 功能
+## 功能概覽
 
-- 系統化的 MCP Server 除錯流程
-- AppleScript Dictionary 分析方法
-- 常見陷阱和解決方案
-- Swift 實作建議
-- **MCP Server 自動重啟**（修復後快速驗證）
+| Command | 用途 | 使用時機 |
+|---------|------|----------|
+| `/mcp-debug:mcp-debug` | 問題診斷 | 有 bug、錯誤時 |
+| `/mcp-debug:mcp-test` | 完整測試 | 開發完成後、CI |
 
-## 包含元件
+## Commands
 
-| 類型 | 名稱 | 說明 |
-|------|------|------|
-| Skill | `mcp-debug` | 自動載入的除錯方法論 |
-| Command | `/mcp-debug` | 手動執行的除錯流程 |
+### `/mcp-debug:mcp-debug <server-name> [error-message]`
 
-## 觸發條件（Skill）
+**問題診斷流程**：當 MCP Server 有問題時使用。
 
-當對話涉及以下內容時自動載入：
-- MCP Server 開發或除錯
-- AppleScript 錯誤
-- `AppleEvent handler failed` 錯誤
-- `sdef` 命令
-- `pkill mcp`
-
-## 核心方法
-
-1. **匯出 Dictionary** - 使用 `sdef` 獲取權威 API 文檔
-2. **分析屬性** - 檢查 `access="r"` vs `access="rw"`
-3. **識別陷阱** - 唯讀屬性、make 命令限制、locale 問題
-4. **測試驗證** - 使用 `claude mcp call` 驗證修復
-5. **重啟 Server** - 使用 `pkill` 重啟，Claude Code 自動重連
-
-## 使用範例
+特色：
+- 快速診斷（連線檢查 + 3 個讀取測試）
+- 錯誤訊息分析（自動判斷問題類型）
+- 框架特定除錯（AppleScript / EventKit / 其他）
+- 權限問題修復指引
+- 診斷報告生成
 
 ```bash
-# 匯出 Things 3 的 AppleScript Dictionary
-sdef /Applications/Things3.app > things3.xml
-
-# 查看特定 class 定義
-sdef /Applications/Things3.app | grep -A 50 'class name="to do"'
-
-# 測試 MCP tool
-claude mcp call che-things-mcp add_todo '{"name": "Test"}'
-
-# 重啟 MCP Server（修復後）
-pkill -f CheThingsMCP
+# 範例
+/mcp-debug:mcp-debug che-ical-mcp
+/mcp-debug:mcp-debug che-things-mcp "access denied"
 ```
+
+### `/mcp-debug:mcp-test <server-name>`
+
+**完整功能測試**：驗證所有 tools 正常運作。
+
+特色：
+- 自動發現所有 tools（從 Server.swift）
+- 分類測試（讀取 / 搜尋 / 建立修改刪除）
+- 生命週期測試（create → update → delete）
+- 測試資料自動清理（`MCP_DEBUG_TEST_` 前綴）
+- 覆蓋率報告
+
+```bash
+# 範例
+/mcp-debug:mcp-test che-ical-mcp
+/mcp-debug:mcp-test che-things-mcp
+```
+
+## 支援的框架
+
+| 框架 | 適用 MCP | 特殊除錯 |
+|------|----------|----------|
+| AppleScript | che-things-mcp, che-apple-mail-mcp | Dictionary 分析、唯讀屬性 |
+| EventKit | che-ical-mcp | 隱私權限（Calendars/Reminders）|
+| 其他 Swift | - | Package.swift 分析 |
+
+## 權限問題快速修復
+
+EventKit MCP 最常見問題是權限：
+
+```bash
+# 開啟系統設定
+open "x-apple.systempreferences:com.apple.preference.security?Privacy_Calendars"
+open "x-apple.systempreferences:com.apple.preference.security?Privacy_Reminders"
+```
+
+**重要**：要授權的是 **IDE**（Cursor/VS Code/Terminal），不是 MCP binary！
 
 ## 相關工具
 
-- **mcp-diagnose**: MCP Server 連線診斷（/mcp-diagnose）
-- **mcp-debug**: 功能除錯與方法論（本 Plugin）
+- **mcp-diagnose**: MCP Server 連線診斷（純連線問題）
+- **mcp-debug**: 功能診斷 + 完整測試（本 Plugin）
