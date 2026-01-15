@@ -1,8 +1,0 @@
-{
-  "name": "mcp-test",
-  "version": "1.0.0",
-  "description": "MCP Server 測試與除錯方法論，包含 AppleScript 整合診斷",
-  "author": { "name": "Che Cheng" },
-  "license": "MIT",
-  "keywords": ["mcp", "test", "debug", "applescript", "dictionary", "sdef"]
-}

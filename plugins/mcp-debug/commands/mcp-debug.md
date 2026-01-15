@@ -1,10 +1,10 @@
 ---
 description: MCP Server AppleScript 除錯流程
 argument-hint: <app-name> [tool-name]
-allowed-tools: Bash(sdef:*), Bash(osascript:*), Bash(claude mcp:*), Read, Grep, Glob
+allowed-tools: Bash(sdef:*), Bash(osascript:*), Bash(claude mcp:*), Bash(pkill:*), Read, Grep, Glob
 ---
 
-# MCP Test - AppleScript 除錯流程
+# MCP Debug - AppleScript 除錯流程
 
 對 MCP Server 的 AppleScript 整合進行系統化除錯。
 
@@ -96,3 +96,37 @@ claude mcp call <server-name> $2 '{}'
 | Anytime | `TMNextListSource` |
 | Someday | `TMSomedayListSource` |
 | Logbook | `TMLogbookListSource` |
+
+---
+
+## MCP Server 重啟
+
+當修復 bug 並重新建置 MCP Server 後，需要重啟才能生效。
+
+### Step 6: 重啟 MCP Server（修復後）
+
+```bash
+# 終止 MCP server process，Claude Code 會自動重連
+pkill -f <binary-name>
+
+# 驗證重連
+claude mcp list 2>&1 | grep -A1 "<server-name>"
+```
+
+### 常用重啟命令
+
+| MCP Server | 重啟命令 |
+|------------|----------|
+| Things 3 | `pkill -f CheThingsMCP` |
+| Apple Mail | `pkill -f CheAppleMailMCP` |
+
+### 部署腳本範例
+
+```bash
+#!/bin/bash
+# deploy.sh
+swift build -c release
+cp .build/release/BinaryName ~/bin/
+pkill -f BinaryName || true
+echo "✅ 部署完成"
+```

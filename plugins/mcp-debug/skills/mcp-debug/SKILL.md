@@ -1,13 +1,13 @@
 ---
-name: mcp-test
+name: mcp-debug
 description: |
-  MCP Server 測試與除錯方法論。當開發或除錯 MCP Server 時載入。
+  MCP Server 除錯方法論。當開發或除錯 MCP Server 時載入。
   特別適用於使用 AppleScript 的 MCP Server（Things 3、Apple Mail、Reminders 等）。
-  觸發關鍵字：MCP debug, AppleScript error, AppleEvent failed, sdef
+  觸發關鍵字：MCP debug, AppleScript error, AppleEvent failed, sdef, pkill mcp
 allowed-tools: Bash, Read, Grep, Glob
 ---
 
-# MCP Test - MCP Server 測試與除錯
+# MCP Debug - MCP Server 除錯方法論
 
 系統化測試和除錯 MCP Server，特別是與 macOS 原生應用整合的 AppleScript 場景。
 
@@ -307,6 +307,65 @@ func executeAppleScript(_ script: String) async throws -> String {
     }
 }
 ```
+
+---
+
+## MCP Server 重啟
+
+當更新 MCP Server binary 後，需要重啟 server 才能讓 Claude Code 載入新版本。
+
+### 方法 1: pkill 重啟（推薦）
+
+Claude Code 會自動重連被終止的 MCP server。
+
+```bash
+# 終止 MCP server process
+pkill -f BinaryName
+
+# 驗證重連
+claude mcp list 2>&1 | grep -A1 "server-name"
+# 應該顯示 ✓ Connected
+```
+
+### 方法 2: 整合到部署腳本
+
+```bash
+#!/bin/bash
+# deploy.sh - 建置並部署 MCP Server
+
+set -e
+
+# 1. 建置
+swift build -c release
+
+# 2. 複製到目標位置
+cp .build/release/BinaryName ~/bin/
+
+# 3. 重啟 MCP Server（Claude Code 會自動重連）
+pkill -f BinaryName || true
+
+echo "✅ 部署完成，MCP Server 已重啟"
+```
+
+### 方法 3: 重啟特定 server
+
+```bash
+# 列出所有 MCP servers
+claude mcp list
+
+# 終止特定 server（用實際 binary 名稱）
+pkill -f CheThingsMCP
+pkill -f CheAppleMailMCP
+
+# 驗證重連狀態
+claude mcp list 2>&1 | grep "✓ Connected"
+```
+
+### 注意事項
+
+- `pkill -f` 會終止所有符合 pattern 的 process
+- Claude Code 偵測到 server 斷線後會自動重連
+- 如果 server 沒有自動重連，可能是 binary 路徑錯誤
 
 ---
 
