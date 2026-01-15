@@ -1,14 +1,18 @@
 # Plugin 版本管理規則
 
-## Marketplace 更新必須更新版本號
+## Marketplace 更新必須同步兩個檔案
 
-當修改任何 plugin 內容時（包括 commands、skills），**必須同時更新 `plugin.json` 的版本號**。
+當修改任何 plugin 內容時（包括 commands、skills），**必須同時更新**：
+
+1. `plugins/<name>/.claude-plugin/plugin.json` - Plugin 自身的版本
+2. `.claude-plugin/marketplace.json` - Marketplace 的 plugins 列表
 
 ### 原因
 
-Claude Code 使用版本號來判斷是否需要重新載入 plugin。如果只修改內容而不更新版本號：
-1. 本地執行 `/plugin` 會提示更新
-2. 但 marketplace 安裝的用戶可能不會收到更新
+- `plugin.json`：Claude Code 使用版本號判斷是否需要重新載入
+- `marketplace.json`：Marketplace 使用此檔案列出可安裝的 plugins
+
+如果只修改其中一個，會導致版本不同步或 plugin 無法被發現。
 
 ### 版本號規則 (Semantic Versioning)
 
@@ -27,22 +31,38 @@ MAJOR.MINOR.PATCH
 每次修改 plugin 時：
 
 - [ ] 更新 `plugin.json` 的 `version` 欄位
-- [ ] 更新 `description` 如果功能有變化
+- [ ] 更新 `marketplace.json` 中對應 plugin 的 `version` 欄位
+- [ ] 更新 `description` 如果功能有變化（兩個檔案都要）
 - [ ] 更新 `keywords` 如果有新功能
 - [ ] Commit message 包含版本號（如 `v2.0.0`）
 
+### 新增/刪除/重命名 Plugin 時
+
+除了上述 checklist，還需要：
+
+- [ ] 在 `marketplace.json` 的 `plugins` 陣列中新增/刪除/修改對應項目
+- [ ] 更新 `README.md` 的 plugins 列表
+
 ### 範例
 
+**plugin.json**:
 ```json
-// 修改前
-{
-  "version": "1.1.0",
-  "description": "舊描述"
-}
-
-// 修改後
 {
   "version": "2.0.0",
-  "description": "新描述，包含新功能說明"
+  "description": "新描述"
+}
+```
+
+**marketplace.json**:
+```json
+{
+  "plugins": [
+    {
+      "name": "my-plugin",
+      "version": "2.0.0",  // 必須與 plugin.json 一致
+      "description": "新描述",
+      "source": "./plugins/my-plugin"
+    }
+  ]
 }
 ```
