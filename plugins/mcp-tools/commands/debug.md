@@ -1,14 +1,15 @@
 ---
-description: MCP Server 除錯流程（診斷問題用，完整測試請用 /mcp-test）
+description: MCP Server 功能除錯（框架分析、權限問題、錯誤診斷）
 argument-hint: <mcp-server-name> [error-message]
 allowed-tools: Bash(sdef:*), Bash(osascript:*), Bash(claude mcp:*), Bash(pkill:*), Bash(swift:*), Bash(tccutil:*), Bash(open:*), Read, Write, Grep, Glob
 ---
 
-# MCP Debug - 問題診斷流程
+# MCP Debug - 功能除錯
 
-當 MCP Server 有問題時，使用此流程系統化診斷。
+當 MCP Server 功能有問題時，使用此流程診斷。
 
-**完整功能測試請使用 `/mcp-debug:mcp-test`**
+**連線問題請用 `/mcp-tools:diagnose`**
+**完整測試請用 `/mcp-tools:test`**
 
 ## 參數
 
@@ -27,8 +28,7 @@ claude mcp list 2>&1 | grep -A1 "$1"
 
 **結果判讀**：
 - `✓ Connected` → 連線正常，進入 Phase 1
-- `✗ Failed` 或找不到 → 進入「連線問題」診斷
-- `Starting...` 卡住 → Server 啟動失敗
+- `✗ Failed` 或找不到 → 先用 `/mcp-tools:diagnose`
 
 ### Step 2: 快速測試（3 個讀取類 tools）
 
@@ -50,7 +50,7 @@ claude mcp list 2>&1 | grep -A1 "$1"
 | `access denied` / `permission` | 權限問題 | → B3 權限除錯 |
 | `not found` / `does not exist` | 資源不存在 | → 檢查參數 |
 | `Can't set property` | AppleScript 唯讀 | → A2 Dictionary 分析 |
-| `connection` / `timeout` | 連線問題 | → Phase 4 重啟 |
+| `connection` / `timeout` | 連線問題 | → Phase 3 重啟 |
 | `parse` / `invalid` | 參數格式錯誤 | → 檢查參數格式 |
 
 ---
