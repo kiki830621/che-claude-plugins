@@ -1,0 +1,32 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "che-claude-plugins",
+  "description": "Che Cheng's Claude Code Plugin Marketplace - 學術研究與生產力工具",
+  "owner": {
+    "name": "Che Cheng",
+    "email": "che@example.com"
+  },
+  "homepage": "https://github.com/kiki830621/che-claude-plugins",
+  "plugins": [
+    {
+      "name": "archive-mail",
+      "version": "2.0.0",
+      "description": "歸檔 Apple Mail 郵件到 Markdown 檔案，使用 apple-mail MCP",
+      "author": {
+        "name": "Che Cheng"
+      },
+      "source": "plugins/archive-mail",
+      "category": "productivity"
+    },
+    {
+      "name": "r-shiny-debugger",
+      "version": "1.0.0",
+      "description": "功能測試導向的 R Shiny App Debug 工具，整合 agent-browser 與 R console",
+      "author": {
+        "name": "Che Cheng"
+      },
+      "source": "plugins/r-shiny-debugger",
+      "category": "development"
+    }
+  ]
+}
