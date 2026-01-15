@@ -9,6 +9,16 @@
   "homepage": "https://github.com/kiki830621/che-claude-plugins",
   "plugins": [
     {
+      "name": "mcp-tools",
+      "version": "1.0.0",
+      "description": "MCP Server 開發工具集：diagnose（連線診斷）、debug（功能除錯）、test（完整測試）",
+      "author": {
+        "name": "Che Cheng"
+      },
+      "source": "./plugins/mcp-tools",
+      "category": "development"
+    },
+    {
       "name": "archive-mail",
       "version": "2.0.0",
       "description": "歸檔 Apple Mail 郵件到 Markdown 檔案，使用 apple-mail MCP",
@@ -47,26 +57,6 @@
       },
       "source": "./plugins/claude-config-guide",
       "category": "productivity"
-    },
-    {
-      "name": "mcp-debug",
-      "version": "1.1.0",
-      "description": "MCP Server 除錯方法論，包含 AppleScript 整合診斷與自動重啟",
-      "author": {
-        "name": "Che Cheng"
-      },
-      "source": "./plugins/mcp-debug",
-      "category": "development"
-    },
-    {
-      "name": "mcp-diagnose",
-      "version": "1.0.0",
-      "description": "MCP Server 連線診斷工具，提供 4 步驟診斷流程",
-      "author": {
-        "name": "Che Cheng"
-      },
-      "source": "./plugins/mcp-diagnose",
-      "category": "development"
     }
   ]
 }
