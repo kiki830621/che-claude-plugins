@@ -47,6 +47,26 @@
       },
       "source": "./plugins/claude-config-guide",
       "category": "productivity"
+    },
+    {
+      "name": "mcp-debug",
+      "version": "1.1.0",
+      "description": "MCP Server 除錯方法論，包含 AppleScript 整合診斷與自動重啟",
+      "author": {
+        "name": "Che Cheng"
+      },
+      "source": "./plugins/mcp-debug",
+      "category": "development"
+    },
+    {
+      "name": "mcp-diagnose",
+      "version": "1.0.0",
+      "description": "MCP Server 連線診斷工具，提供 4 步驟診斷流程",
+      "author": {
+        "name": "Che Cheng"
+      },
+      "source": "./plugins/mcp-diagnose",
+      "category": "development"
     }
   ]
 }
