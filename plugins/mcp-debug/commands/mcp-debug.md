@@ -249,17 +249,30 @@ claude mcp list 2>&1 | grep -A1 "$1"
 
 ### Step 3: 測試基本功能
 
-```bash
-# 讀取類
-claude mcp call $1 list_calendars '{}'
-claude mcp call $1 get_today '{}'
+**直接呼叫 MCP tools 測試**（不是用 bash，是 LLM 直接呼叫）：
 
-# 建立類（小心測試）
-claude mcp call $1 create_event '{"title":"Test","start_time":"...","end_time":"...","calendar_name":"..."}'
+#### 測試順序
 
-# 搜尋類
-claude mcp call $1 search_events '{"keyword":"meeting"}'
-```
+1. **讀取類 tools（安全）**：先測試這類，不會改變資料
+   - `list_calendars`、`list_events`、`get_today` 等
+
+2. **搜尋類 tools（安全）**：測試查詢功能
+   - `search_events`、`search_todos` 等
+
+3. **建立/修改類 tools（小心）**：會改變資料，謹慎測試
+   - `create_event`、`update_event`、`delete_event` 等
+
+#### 測試範例
+
+以 `che-ical-mcp` 為例，依序呼叫：
+
+| 順序 | Tool | 說明 |
+|------|------|------|
+| 1 | `mcp__che-ical-mcp__list_calendars` | 確認連線正常 |
+| 2 | `mcp__che-ical-mcp__list_events_quick` | 測試事件查詢 |
+| 3 | `mcp__che-ical-mcp__list_reminders` | 測試提醒事項 |
+
+如果讀取類 tools 失敗，通常是**權限問題**，回到 B3 步驟檢查。
 
 ---
 
