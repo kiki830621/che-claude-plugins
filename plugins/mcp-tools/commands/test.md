@@ -32,6 +32,24 @@ claude mcp list 2>&1 | grep -A1 "$1"
 grep -r "^import" ~/Library/CloudStorage/Dropbox/che_workspace/projects/mcp/$1/Sources/ 2>/dev/null | head -10
 ```
 
+### Step 3: 建立測試日誌目錄
+
+在專案根目錄建立 `logs/mcptools/test/` 結構：
+
+```bash
+cd ~/Library/CloudStorage/Dropbox/che_workspace/projects/mcp/$1
+mkdir -p logs/mcptools/test
+```
+
+**目錄結構**：
+```
+<project>/
+└── logs/
+    └── mcptools/
+        └── test/           ← 測試報告存放處
+            └── test-report-<timestamp>.md
+```
+
 ---
 
 ## Phase 1: Tool 發現
@@ -163,6 +181,17 @@ delete_events_batch (刪除所有)
 
 ## Phase 3: 測試報告
 
+### Step 1: 產生報告
+
+將報告存到 `logs/mcptools/test/test-report-<timestamp>.md`：
+
+```bash
+# 報告檔案路徑
+REPORT_FILE="logs/mcptools/test/test-report-$(date +%Y%m%d-%H%M%S).md"
+```
+
+### Step 2: 報告格式
+
 ```markdown
 # MCP Test Report: <server-name>
 Generated: <timestamp>
@@ -203,6 +232,15 @@ Generated: <timestamp>
 | Tool | 錯誤訊息 | 可能原因 |
 |------|----------|----------|
 | ... | ... | ... |
+```
+
+### Step 3: 儲存報告
+
+使用 Write 工具將報告寫入 `$REPORT_FILE`。
+
+完成後輸出：
+```
+✅ 測試報告已儲存: logs/mcptools/test/test-report-<timestamp>.md
 ```
 
 ---

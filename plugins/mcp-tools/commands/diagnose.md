@@ -16,6 +16,15 @@ allowed-tools: Bash(ls:*, file:*, claude:mcp*), Read, Grep, mcp__*
 
 ## 診斷流程
 
+### Step 0: 建立診斷日誌目錄
+
+在專案根目錄建立 `logs/mcptools/debug/` 結構（diagnose 報告也存在 debug 目錄）：
+
+```bash
+cd ~/Library/CloudStorage/Dropbox/che_workspace/projects/mcp/$1
+mkdir -p logs/mcptools/debug
+```
+
 ### Step 1: 檢查連線狀態
 
 ```bash
@@ -43,21 +52,36 @@ claude mcp list 2>&1 | grep -A1 "$1"
 
 ### Step 3: 輸出診斷報告
 
+將報告存到 `logs/mcptools/debug/diagnose-report-<timestamp>.md`：
+
+```bash
+# 報告檔案路徑
+REPORT_FILE="logs/mcptools/debug/diagnose-report-$(date +%Y%m%d-%H%M%S).md"
 ```
-═══════════════════════════════════════════
-MCP Diagnose 報告
-═══════════════════════════════════════════
 
-Server: <server-name>
-連線狀態: ✓ 已連接 / ✗ 未連接
-Binary: /path/to/binary
+**報告格式**：
 
-測試結果:
-  ✓/✗ 基本連線測試
+```markdown
+# MCP Diagnose Report: <server-name>
+Generated: <timestamp>
 
-診斷結果: 正常 / 需要進一步除錯
+## 連線狀態
+- 狀態: ✓ 已連接 / ✗ 未連接
+- Binary: /path/to/binary
 
-═══════════════════════════════════════════
+## 測試結果
+- 基本連線測試: ✓ / ✗
+
+## 診斷結論
+- 結果: 正常 / 需要進一步除錯
+- 建議: <如果需要>
+```
+
+使用 Write 工具將報告寫入 `$REPORT_FILE`。
+
+完成後輸出：
+```
+✅ 診斷報告已儲存: logs/mcptools/debug/diagnose-report-<timestamp>.md
 ```
 
 ---

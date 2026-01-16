@@ -20,6 +20,24 @@ allowed-tools: Bash(sdef:*), Bash(osascript:*), Bash(claude mcp:*), Bash(pkill:*
 
 ## Phase 0: 快速診斷
 
+### Step 0: 建立除錯日誌目錄
+
+在專案根目錄建立 `logs/mcptools/debug/` 結構：
+
+```bash
+cd ~/Library/CloudStorage/Dropbox/che_workspace/projects/mcp/$1
+mkdir -p logs/mcptools/debug
+```
+
+**目錄結構**：
+```
+<project>/
+└── logs/
+    └── mcptools/
+        └── debug/          ← 除錯報告存放處
+            └── debug-report-<timestamp>.md
+```
+
 ### Step 1: 檢查連線狀態
 
 ```bash
@@ -195,6 +213,17 @@ cat $1/Package.swift
 
 ## Phase 2: 診斷報告
 
+### Step 1: 產生報告
+
+將報告存到 `logs/mcptools/debug/debug-report-<timestamp>.md`：
+
+```bash
+# 報告檔案路徑
+REPORT_FILE="logs/mcptools/debug/debug-report-$(date +%Y%m%d-%H%M%S).md"
+```
+
+### Step 2: 報告格式
+
 ```markdown
 # MCP Debug Report: <server-name>
 Generated: <timestamp>
@@ -214,6 +243,15 @@ Generated: <timestamp>
 ## 修復建議
 1. <step-1>
 2. <step-2>
+```
+
+### Step 3: 儲存報告
+
+使用 Write 工具將報告寫入 `$REPORT_FILE`。
+
+完成後輸出：
+```
+✅ 除錯報告已儲存: logs/mcptools/debug/debug-report-<timestamp>.md
 ```
 
 ---
