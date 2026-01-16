@@ -223,6 +223,70 @@ MAJOR.MINOR.PATCH
 
 ---
 
+## Swift MCP 開發陷阱
+
+### actor vs class
+
+**問題**：使用 Swift `actor` 作為 MCP Server 類型會導致 "Failed to connect" 錯誤。
+
+```swift
+// ✗ 不能用 - actor 隔離機制與 MCP SDK 不相容
+actor WordMCPServer {
+    init() { ... }
+}
+
+// ✓ 正確 - 使用 class
+class WordMCPServer {
+    init() async { ... }
+}
+```
+
+**原因**：
+- Swift `actor` 提供嚴格的資料隔離
+- MCP SDK 的 callback handlers 無法正確跨越 actor 邊界
+- 導致 stdin/stdout 通訊失敗
+
+### capabilities 宣告
+
+**問題**：Server 初始化時未宣告 capabilities 會導致連線失敗。
+
+```swift
+// ✗ 不能用 - 缺少 capabilities
+Server(name: "...", version: "...")
+
+// ✓ 正確 - 宣告 tools capability
+Server(
+    name: "...",
+    version: "...",
+    capabilities: .init(tools: .init())
+)
+```
+
+**原因**：MCP client 需要知道 server 支援什麼功能才能正確初始化。
+
+### Handler 註冊時機
+
+**問題**：Handler 註冊順序不正確可能導致競爭條件。
+
+```swift
+// ✓ 推薦 - 在 init() 中註冊
+init() async {
+    self.server = Server(...)
+    await registerHandlers()  // 在 start() 之前
+}
+
+func run() async throws {
+    try await server.start(transport: transport)
+    await server.waitUntilCompleted()
+}
+```
+
+### 參考實作
+
+參考 che-ical-mcp 的 Server.swift 作為標準模式。
+
+---
+
 ## 未來考量
 
 ### 可能的擴展
