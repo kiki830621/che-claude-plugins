@@ -271,9 +271,17 @@ unzip -l mcpb/*.mcpb | head -20
 | 錯誤格式 | 正確格式 |
 |---------|---------|
 | `"author": "Name"` | `"author": { "name": "Name" }` |
+| `"repository": "url"` | `"repository": { "type": "git", "url": "..." }` |
 | `"entrypoint": {...}` | `"server": {...}` |
 | 缺少 `manifest_version` | `"manifest_version": "0.3"` |
 | `"path": "..."` | `"entry_point": "..."` |
+
+**不支援的欄位**（會導致錯誤）：
+- ~~`id`~~ - 使用 `name`
+- ~~`platforms`~~ - 不支援
+- ~~`capabilities`~~ - 不支援
+- ~~`display_name`~~ - 不支援
+- ~~`tools`~~ - 工具從 Server 動態取得
 
 ---
 

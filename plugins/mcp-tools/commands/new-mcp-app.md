@@ -450,28 +450,23 @@ git add .gitattributes
 
 ### Step 4: mcpb/manifest.json
 
+**重要**：MCPB 0.3 規範對欄位格式有嚴格要求，錯誤會導致 Claude Desktop 顯示 "Invalid manifest"。
+
 ```json
 {
   "manifest_version": "0.3",
   "name": "{project-name}",
-  "display_name": "{display-name}",
   "version": "0.1.0",
   "description": "{description}",
-  "long_description": "{description}",
   "author": {
-    "name": "Che Cheng",
-    "url": "https://github.com/kiki830621"
+    "name": "Che Cheng"
   },
+  "license": "MIT",
+  "homepage": "https://github.com/kiki830621/{project-name}",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kiki830621/{project-name}.git"
+    "url": "https://github.com/kiki830621/{project-name}"
   },
-  "homepage": "https://github.com/kiki830621/{project-name}",
-  "support": "https://github.com/kiki830621/{project-name}/issues",
-  "icon": "icon.png",
-  "keywords": [],
-  "license": "MIT",
-  "privacy_policies": ["https://github.com/kiki830621/{project-name}/blob/main/mcpb/PRIVACY.md"],
   "server": {
     "type": "binary",
     "entry_point": "server/{BinaryName}",
@@ -481,14 +476,16 @@ git add .gitattributes
       "env": {}
     }
   },
-  "tools": [
-    { "name": "hello_world", "description": "A simple hello world tool" }
-  ],
-  "compatibility": {
-    "platforms": ["darwin"]
-  }
+  "keywords": []
 }
 ```
+
+**不要使用的欄位**（會被拒絕）：
+- ~~`id`~~ - 使用 `name` 即可
+- ~~`platforms`~~ - 不支援
+- ~~`capabilities`~~ - 不支援
+- ~~`display_name`~~ - 不支援
+- ~~`tools`~~ - 不支援（工具從 Server 動態取得）
 
 ### Step 5: mcpb/PRIVACY.md
 
