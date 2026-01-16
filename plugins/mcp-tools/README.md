@@ -8,6 +8,7 @@ MCP Server 開發工具集，提供完整的專案建立、部署發布、升級
 |---------|------|----------|
 | `/mcp-tools:new-mcp-app` | 建立新專案 | 開始開發新 MCP Server |
 | `/mcp-tools:mcp-deploy` | 部署發布 | 專案完成，要發布到 GitHub Release |
+| `/mcp-tools:mcp-install` | 安裝 MCP | 從 GitHub Release 下載安裝到 ~/bin |
 | `/mcp-tools:mcp-upgrade` | 升級建議 | 檢查依賴更新、結構優化 |
 | `/mcp-tools:diagnose` | 連線診斷 | Server 無法連線時 |
 | `/mcp-tools:debug` | 功能除錯 | 有 bug、錯誤時 |
@@ -18,15 +19,15 @@ MCP Server 開發工具集，提供完整的專案建立、部署發布、升級
 ## 專案生命週期
 
 ```
-建立專案               開發完成               維護升級
-    │                     │                     │
-    ▼                     ▼                     ▼
-┌──────────────┐   ┌──────────────┐   ┌──────────────┐
-│ new-mcp-app  │ → │  mcp-deploy  │ → │  mcp-upgrade │
-└──────────────┘   └──────────────┘   └──────────────┘
-      │                   │                   │
-  建立完整結構         編譯+打包+發布       依賴+結構分析
-  Swift/Python/TS     GitHub Release      升級建議報告
+建立專案               開發完成               其他機器安裝            維護升級
+    │                     │                       │                     │
+    ▼                     ▼                       ▼                     ▼
+┌──────────────┐   ┌──────────────┐       ┌──────────────┐   ┌──────────────┐
+│ new-mcp-app  │ → │  mcp-deploy  │ ────→ │  mcp-install │   │  mcp-upgrade │
+└──────────────┘   └──────────────┘       └──────────────┘   └──────────────┘
+      │                   │                       │                   │
+  建立完整結構         編譯+打包+發布         從 GitHub 下載       依賴+結構分析
+  Swift/Python/TS     GitHub Release         安裝到 ~/bin        升級建議報告
 ```
 
 ---
@@ -91,6 +92,28 @@ mcpb/
 ```
 
 **重要**：`.mcpb` 檔案放在 `mcpb/` 目錄內，不是專案根目錄！
+
+### `/mcp-tools:mcp-install [version]`
+
+**安裝 MCP**：從 GitHub Release 下載並安裝到 `~/bin`。
+
+```bash
+/mcp-tools:mcp-install              # 安裝最新版
+/mcp-tools:mcp-install v1.2.0       # 安裝指定版本
+/mcp-tools:mcp-install --list       # 列出可用版本
+```
+
+流程：
+1. **讀取** - 從 manifest.json 取得專案資訊
+2. **下載** - 從 GitHub Release 下載 binary
+3. **安裝** - 放置到 ~/bin 並設定執行權限
+
+**與 mcp-deploy 的差異**：
+
+| 命令 | 用途 | Reproducibility |
+|------|------|-----------------|
+| `mcp-deploy` | 編譯+發布（開發用） | 可能是未 release 的版本 |
+| `mcp-install` | 下載+安裝（使用用） | 確保是已發布的 release 版本 |
 
 ### `/mcp-tools:mcp-upgrade [focus-area]`
 
@@ -232,6 +255,7 @@ open "x-apple.systempreferences:com.apple.preference.security?Privacy_Reminders"
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v1.5.0 | 2026-01-16 | 新增 mcp-install 命令：從 GitHub Release 下載安裝 MCP Server |
 | v1.3.0 | 2026-01-16 | 修正 MCPB 套件結構說明，.mcpb 放置於 mcpb/ 目錄內；更新 README 文件 |
 | v1.2.0 | 2026-01-16 | 新增 new-mcp-app、mcp-deploy、mcp-upgrade 三個開發流程命令 |
 | v1.1.0 | 2026-01-15 | 新增 debug、test 命令 |
