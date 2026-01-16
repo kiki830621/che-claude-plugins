@@ -1,0 +1,380 @@
+---
+description: 分析並提議 MCP Server 專案升級（依賴更新、結構優化、新功能建議）
+argument-hint: [focus-area]
+allowed-tools: Read, Write, Edit, Bash(swift:*), Bash(git:*), Bash(npm:*), Bash(pip:*), Bash(cat:*), Bash(grep:*), Grep, Glob, WebFetch, AskUserQuestion
+---
+
+# MCP Upgrade - 專案升級建議
+
+分析現有 MCP 專案，提出升級和改進建議，等待核可後執行。
+
+**建立新專案請用 `/mcp-tools:new-mcp-app`**
+**部署專案請用 `/mcp-tools:mcp-deploy`**
+
+## 參數
+
+- `$1` = 聚焦領域（可選）
+  - `deps` - 只檢查依賴更新
+  - `structure` - 只檢查結構優化
+  - `features` - 只建議新功能
+  - `all` - 全面分析（預設）
+
+---
+
+## Phase 0: 專案分析
+
+### Step 1: 確認專案位置
+
+```bash
+pwd
+ls -la
+```
+
+**必須存在**：
+- MCP 專案根目錄
+- `mcpb/manifest.json`
+
+### Step 2: 識別語言和框架
+
+| 檔案 | 語言 |
+|------|------|
+| `Package.swift` | Swift |
+| `pyproject.toml` | Python |
+| `package.json` + `tsconfig.json` | TypeScript |
+
+### Step 3: 收集專案資訊
+
+讀取以下檔案：
+- `mcpb/manifest.json` - 版本、工具列表
+- `CHANGELOG.md` - 變更歷史
+- `README.md` - 功能說明
+- 主要 Server 程式碼
+
+---
+
+## Phase 1: 依賴分析（Dependency Analysis）
+
+### Swift 依賴檢查
+
+#### 1A: 讀取當前依賴
+
+```bash
+cat Package.swift | grep -A5 'dependencies'
+cat Package.resolved | grep -A2 '"version"' | head -20
+```
+
+#### 1B: 檢查 MCP SDK 最新版本
+
+使用 WebFetch 查詢：
+- https://github.com/modelcontextprotocol/swift-sdk/releases
+
+#### 1C: 檢查其他依賴
+
+常用 Swift 依賴的最新版本：
+| 套件 | 用途 | 檢查 URL |
+|------|------|----------|
+| swift-sdk | MCP 協議 | github.com/modelcontextprotocol/swift-sdk |
+| swift-log | 日誌 | github.com/apple/swift-log |
+
+---
+
+### Python 依賴檢查
+
+#### 1A: 讀取當前依賴
+
+```bash
+cat pyproject.toml | grep -A20 'dependencies'
+pip list --outdated 2>/dev/null
+```
+
+#### 1B: 檢查 MCP 套件最新版本
+
+```bash
+pip index versions mcp 2>/dev/null | head -5
+```
+
+---
+
+### TypeScript 依賴檢查
+
+#### 1A: 讀取當前依賴
+
+```bash
+cat package.json | grep -A20 '"dependencies"'
+npm outdated 2>/dev/null
+```
+
+#### 1B: 檢查最新版本
+
+```bash
+npm view @modelcontextprotocol/sdk version
+```
+
+---
+
+## Phase 2: 結構分析（Structure Analysis）
+
+### Step 1: 檢查目錄結構
+
+根據語言檢查是否符合最佳實踐：
+
+#### Swift 最佳結構
+```
+✅ Sources/{Name}/main.swift          - 進入點
+✅ Sources/{Name}Core/Server.swift    - 核心邏輯
+✅ Sources/{Name}Core/{Name}Manager.swift - 業務邏輯
+✅ Tests/{Name}Tests/                 - 單元測試
+✅ mcpb/manifest.json                 - MCPB 套件
+✅ mcpb/PRIVACY.md                    - 隱私政策
+✅ .gitattributes                     - LFS 設定
+```
+
+#### 缺失項目建議
+| 缺失 | 建議 | 優先級 |
+|------|------|--------|
+| Tests/ | 加入單元測試 | 中 |
+| docs/ | 加入文檔目錄 | 低 |
+| .gitattributes | 設定 Git LFS | 高（如有 binary） |
+| mcpb/icon.png | 加入圖示 | 低 |
+| README Version History | 加入版本歷史表格 | 中 |
+| CHANGELOG.md | 加入變更日誌 | 中 |
+| LICENSE | 加入授權檔案 | 高 |
+
+### Step 2: 檢查程式碼品質
+
+#### Swift 程式碼檢查
+```bash
+# 檢查是否有 TODO/FIXME
+grep -rn "TODO\|FIXME" Sources/
+
+# 檢查是否有硬編碼
+grep -rn "hardcode\|HARDCODE" Sources/
+
+# 檢查錯誤處理
+grep -rn "try!" Sources/  # 不安全的 try
+```
+
+#### 常見問題
+| 問題 | 建議 |
+|------|------|
+| `try!` 使用 | 改用 `try` + error handling |
+| 硬編碼字串 | 提取為常數 |
+| 缺少註解 | 為 public API 加入文檔註解 |
+
+---
+
+## Phase 3: 功能分析（Feature Analysis）
+
+### Step 1: 分析現有工具
+
+讀取 `mcpb/manifest.json` 中的 tools 列表，分析：
+- 工具數量
+- 工具分類（讀取/寫入/刪除/查詢）
+- 是否有批次操作
+- 是否支援 i18n
+
+### Step 2: 對比 API 能力
+
+根據框架類型，檢查是否有未實作的 API：
+
+#### AppleScript 框架
+```bash
+# 匯出 Dictionary
+sdef /Applications/{AppName}.app > /tmp/app-dict.xml
+
+# 比對已實作的命令
+grep 'command name=' /tmp/app-dict.xml
+```
+
+#### EventKit 框架
+檢查是否支援：
+- [ ] 日曆事件 CRUD
+- [ ] 提醒事項 CRUD
+- [ ] 重複事件
+- [ ] 提醒通知
+- [ ] 批次操作
+
+### Step 3: 建議新功能
+
+根據分析結果，建議可能的新功能：
+
+| 類型 | 建議 | 複雜度 |
+|------|------|--------|
+| 批次操作 | 如果沒有 `*_batch` 工具 | 中 |
+| 搜尋功能 | 如果沒有 `search_*` 工具 | 低 |
+| 匯出功能 | 如果沒有 `export_*` 工具 | 中 |
+| UI 操作 | 如果沒有 `show_*` 工具 | 低 |
+
+---
+
+## Phase 4: 生成升級建議報告
+
+### 報告格式
+
+```markdown
+# MCP 升級建議報告
+
+**專案**: {project-name}
+**當前版本**: {current-version}
+**分析時間**: {timestamp}
+**語言**: Swift / Python / TypeScript
+
+---
+
+## 📦 依賴更新
+
+### 需要更新
+| 套件 | 當前版本 | 最新版本 | 重要性 |
+|------|----------|----------|--------|
+| swift-sdk | 0.9.0 | 0.10.0 | 🔴 高 |
+
+### 更新指令
+```bash
+# Swift: 編輯 Package.swift
+.package(url: "...", from: "0.10.0")
+
+# 然後執行
+swift package update
+```
+
+---
+
+## 🏗️ 結構優化
+
+### 建議改進
+| 項目 | 現狀 | 建議 | 優先級 |
+|------|------|------|--------|
+| 單元測試 | ❌ 缺失 | 加入 Tests/ | 🟡 中 |
+| Git LFS | ❌ 未設定 | 加入 .gitattributes | 🔴 高 |
+
+### 改進步驟
+1. **加入 .gitattributes**
+   ```
+   *.mcpb filter=lfs diff=lfs merge=lfs -text
+   mcpb/server/* filter=lfs diff=lfs merge=lfs -text
+   ```
+
+---
+
+## ✨ 新功能建議
+
+### 可實作功能
+| 功能 | 描述 | 複雜度 | API 支援 |
+|------|------|--------|----------|
+| search_items | 關鍵字搜尋 | 低 | ✅ |
+| export_data | 匯出為 JSON | 中 | ✅ |
+| batch_update | 批次更新 | 中 | ✅ |
+
+### 實作優先順序
+1. 🔴 **高優先**: search_items（用戶常用）
+2. 🟡 **中優先**: batch_update（效率提升）
+3. 🟢 **低優先**: export_data（進階功能）
+
+---
+
+## ⚠️ 潛在問題
+
+| 問題 | 位置 | 建議 |
+|------|------|------|
+| 不安全的 try! | Server.swift:45 | 改用 do-catch |
+| 硬編碼路徑 | Manager.swift:23 | 使用環境變數 |
+
+---
+
+## 📋 執行計畫
+
+### 建議執行順序
+1. [ ] 更新依賴
+2. [ ] 修復潛在問題
+3. [ ] 結構優化
+4. [ ] 實作新功能
+5. [ ] 測試和部署
+
+---
+
+**請確認要執行哪些升級項目？**
+```
+
+---
+
+## Phase 5: 等待核可並執行
+
+### Step 1: 詢問用戶
+
+使用 AskUserQuestion 詢問要執行哪些項目：
+
+**選項**：
+- [ ] 更新依賴
+- [ ] 結構優化（加入缺失檔案）
+- [ ] 修復潛在問題
+- [ ] 實作新功能（需另外討論細節）
+- [ ] 全部執行
+- [ ] 暫不執行（只保留報告）
+
+### Step 2: 執行核可的項目
+
+根據用戶選擇，執行對應的修改：
+
+#### 更新依賴
+```bash
+# Swift
+# 編輯 Package.swift，然後：
+swift package update
+
+# Python
+pip install --upgrade mcp
+
+# TypeScript
+npm update
+```
+
+#### 加入缺失檔案
+使用 Write 工具建立缺失的檔案（.gitattributes、Tests/、docs/ 等）
+
+#### 修復問題
+使用 Edit 工具修復程式碼問題
+
+### Step 3: 驗證修改
+
+```bash
+# Swift
+swift build
+
+# Python
+python -m pytest
+
+# TypeScript
+npm run build
+```
+
+---
+
+## 快速參考
+
+### 常見升級項目
+
+| 項目 | 檢查方式 | 升級方式 |
+|------|----------|----------|
+| MCP SDK | 比對 GitHub releases | 更新 Package.swift |
+| 缺少測試 | 檢查 Tests/ 目錄 | 建立測試檔案 |
+| 缺少 LFS | 檢查 .gitattributes | 建立並設定 |
+| 缺少版本歷史 | 檢查 README Version History | 在 README 加入表格 |
+| 缺少 CHANGELOG | 檢查 CHANGELOG.md | 建立變更日誌 |
+| 缺少 LICENSE | 檢查根目錄 | 建立授權檔案 |
+| 程式碼品質 | grep TODO/FIXME/try! | 逐一修復 |
+
+### 升級風險評估
+
+| 風險等級 | 說明 | 建議 |
+|----------|------|------|
+| 🟢 低 | 文檔、結構優化 | 可直接執行 |
+| 🟡 中 | 依賴更新、新功能 | 建議測試後部署 |
+| 🔴 高 | 破壞性 API 變更 | 需要仔細審查 |
+
+### MCP SDK 版本歷史
+
+| 版本 | 重要變更 |
+|------|----------|
+| 0.10.0 | Tool annotations 支援 |
+| 0.9.0 | StdioTransport 改進 |
+| 0.8.0 | 初始穩定版本 |

@@ -1,16 +1,117 @@
 # MCP Tools
 
-MCP Server 開發工具集，整合連線診斷、功能除錯、完整測試三大功能。
+MCP Server 開發工具集，提供完整的專案建立、部署發布、升級建議、連線診斷、功能除錯、測試驗證功能。
 
 ## Commands
 
 | Command | 用途 | 使用時機 |
 |---------|------|----------|
+| `/mcp-tools:new-mcp-app` | 建立新專案 | 開始開發新 MCP Server |
+| `/mcp-tools:mcp-deploy` | 部署發布 | 專案完成，要發布到 GitHub Release |
+| `/mcp-tools:mcp-upgrade` | 升級建議 | 檢查依賴更新、結構優化 |
 | `/mcp-tools:diagnose` | 連線診斷 | Server 無法連線時 |
 | `/mcp-tools:debug` | 功能除錯 | 有 bug、錯誤時 |
 | `/mcp-tools:test` | 完整測試 | 開發完成後、CI |
 
-## 使用流程
+---
+
+## 專案生命週期
+
+```
+建立專案               開發完成               維護升級
+    │                     │                     │
+    ▼                     ▼                     ▼
+┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+│ new-mcp-app  │ → │  mcp-deploy  │ → │  mcp-upgrade │
+└──────────────┘   └──────────────┘   └──────────────┘
+      │                   │                   │
+  建立完整結構         編譯+打包+發布       依賴+結構分析
+  Swift/Python/TS     GitHub Release      升級建議報告
+```
+
+---
+
+## 開發流程 Commands
+
+### `/mcp-tools:new-mcp-app [project-name]`
+
+**建立新專案**：互動式建立完整的 MCP Server 專案結構。
+
+```bash
+/mcp-tools:new-mcp-app
+/mcp-tools:new-mcp-app che-notes-mcp
+```
+
+支援語言：
+- **Swift**（推薦）- macOS 原生整合、單一 binary
+- **Python** - 快速開發、跨平台
+- **TypeScript** - Node.js 生態系
+
+建立的結構：
+```
+project-name/
+├── Package.swift / pyproject.toml / package.json
+├── Sources/ / src/        # 程式碼
+├── mcpb/                   # MCPB 套件目錄
+│   ├── manifest.json       # 套件 metadata
+│   ├── PRIVACY.md          # 隱私政策
+│   ├── server/             # Binary 存放位置
+│   └── {project}.mcpb      # 打包後的套件檔（部署時產生）
+├── .gitattributes          # Git LFS 設定
+├── README.md
+├── CHANGELOG.md
+└── LICENSE
+```
+
+### `/mcp-tools:mcp-deploy [version]`
+
+**部署發布**：編譯 → 打包 MCPB → 建立 GitHub Release。
+
+```bash
+/mcp-tools:mcp-deploy
+/mcp-tools:mcp-deploy 1.0.0
+```
+
+流程：
+1. **編譯** - Swift: Universal Binary (arm64 + x86_64)
+2. **打包** - 建立 `.mcpb` 套件檔（放在 `mcpb/` 目錄內）
+3. **更新** - manifest.json、CHANGELOG.md、README.md 版本歷史
+4. **發布** - git commit/push + GitHub Release
+
+#### MCPB 套件結構
+
+```
+mcpb/
+├── manifest.json           # 套件 metadata（必要）
+├── PRIVACY.md              # 隱私政策（必要）
+├── icon.png                # 套件圖示（推薦）
+├── server/                 # Binary 或 script（必要）
+│   └── BinaryName          # 執行檔
+└── project-name.mcpb       # 打包後的 ZIP 檔案
+```
+
+**重要**：`.mcpb` 檔案放在 `mcpb/` 目錄內，不是專案根目錄！
+
+### `/mcp-tools:mcp-upgrade [focus-area]`
+
+**升級建議**：分析現有專案，提出改進建議。
+
+```bash
+/mcp-tools:mcp-upgrade           # 全面分析
+/mcp-tools:mcp-upgrade deps      # 只檢查依賴
+/mcp-tools:mcp-upgrade structure # 只檢查結構
+/mcp-tools:mcp-upgrade features  # 只建議新功能
+```
+
+檢查項目：
+- **依賴更新** - MCP SDK、其他套件最新版本
+- **結構優化** - 缺失檔案（LICENSE、CHANGELOG、.gitattributes）
+- **程式碼品質** - TODO/FIXME、不安全的 try!
+- **新功能建議** - 批次操作、搜尋功能等
+
+---
+
+## 除錯流程 Commands
 
 ```
 MCP Server 有問題？
@@ -38,8 +139,6 @@ MCP Server 有問題？
 │ /mcp-tools:test   │  ← 驗證所有功能
 └───────────────────┘
 ```
-
-## Commands 詳情
 
 ### `/mcp-tools:diagnose <server-name>`
 
@@ -83,12 +182,15 @@ MCP Server 有問題？
 - 生命週期測試（無副作用）
 - 覆蓋率報告
 
+---
+
 ## 支援的框架
 
 | 框架 | 適用 MCP | 特殊除錯 |
 |------|----------|----------|
 | AppleScript | che-things-mcp, che-apple-mail-mcp | Dictionary 分析、唯讀屬性 |
 | EventKit | che-ical-mcp | 隱私權限（Calendars/Reminders）|
+| OOXML | che-word-mcp | Document 結構分析 |
 | 其他 Swift | - | Package.swift 分析 |
 
 ## 權限問題快速修復
@@ -112,3 +214,25 @@ open "x-apple.systempreferences:com.apple.preference.security?Privacy_Reminders"
 | Calendar | `MCP_DEBUG_TEST_CALENDAR` |
 | Todo | `MCP_DEBUG_TEST_TODO` |
 | Project | `MCP_DEBUG_TEST_PROJECT` |
+
+---
+
+## MCP Server 對應表
+
+| MCP Server | Binary 名稱 | 語言 |
+|------------|-------------|------|
+| che-things-mcp | CheThingsMCP | Swift |
+| che-ical-mcp | CheICalMCP | Swift |
+| che-apple-mail-mcp | CheAppleMailMCP | Swift |
+| che-word-mcp | CheWordMCP | Swift |
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| v1.3.0 | 2026-01-16 | 修正 MCPB 套件結構說明，.mcpb 放置於 mcpb/ 目錄內；更新 README 文件 |
+| v1.2.0 | 2026-01-16 | 新增 new-mcp-app、mcp-deploy、mcp-upgrade 三個開發流程命令 |
+| v1.1.0 | 2026-01-15 | 新增 debug、test 命令 |
+| v1.0.0 | 2026-01-14 | 初始版本，diagnose 命令 |
