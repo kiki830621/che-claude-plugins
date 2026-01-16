@@ -1,6 +1,6 @@
 {
   "name": "mcp-tools",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "MCP Server 開發工具集：new-mcp-app（建立專案）、mcp-deploy（部署發布）、mcp-upgrade（升級建議）、diagnose（連線診斷）、debug（功能除錯）、test（完整測試）。報告統一存放於 logs/mcptools/",
   "author": { "name": "Che Cheng" },
   "license": "MIT",

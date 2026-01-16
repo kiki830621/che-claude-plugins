@@ -241,6 +241,40 @@ unzip -l mcpb/*.mcpb | head -20
 - `server/` 目錄（含 binary 或 script）
 - `icon.png`（推薦）
 
+### Step 8: 驗證 manifest.json 格式
+
+**重要**：manifest.json 必須符合 MCPB 0.3 規範，否則 Claude Desktop 會顯示 "Invalid manifest" 錯誤。
+
+**必要欄位**：
+```json
+{
+  "manifest_version": "0.3",
+  "name": "{project-name}",
+  "version": "{version}",
+  "description": "{description}",
+  "author": {
+    "name": "Che Cheng"
+  },
+  "server": {
+    "type": "binary",
+    "entry_point": "server/{BinaryName}",
+    "mcp_config": {
+      "command": "${__dirname}/server/{BinaryName}",
+      "args": [],
+      "env": {}
+    }
+  }
+}
+```
+
+**常見錯誤**：
+| 錯誤格式 | 正確格式 |
+|---------|---------|
+| `"author": "Name"` | `"author": { "name": "Name" }` |
+| `"entrypoint": {...}` | `"server": {...}` |
+| 缺少 `manifest_version` | `"manifest_version": "0.3"` |
+| `"path": "..."` | `"entry_point": "..."` |
+
 ---
 
 ## Phase 3: 發布到 GitHub
