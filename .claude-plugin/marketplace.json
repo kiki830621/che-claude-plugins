@@ -57,6 +57,26 @@
       },
       "source": "./plugins/claude-config-guide",
       "category": "productivity"
+    },
+    {
+      "name": "che-things-mcp",
+      "version": "1.6.1",
+      "description": "Things 3 任務管理 MCP Server - 47 個工具支援完整 GTD 工作流程",
+      "author": {
+        "name": "Che Cheng"
+      },
+      "source": "./plugins/che-things-mcp",
+      "category": "productivity"
+    },
+    {
+      "name": "che-ical-mcp",
+      "version": "0.8.0",
+      "description": "macOS 行事曆與提醒事項 MCP Server - EventKit 整合，20 個工具",
+      "author": {
+        "name": "Che Cheng"
+      },
+      "source": "./plugins/che-ical-mcp",
+      "category": "productivity"
     }
   ]
 }
