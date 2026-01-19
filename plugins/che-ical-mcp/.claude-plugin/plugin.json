@@ -1,0 +1,28 @@
+{
+  "name": "che-ical-mcp",
+  "version": "0.8.0",
+  "description": "macOS Calendar & Reminders integration - Native EventKit access for complete calendar and task management",
+  "author": "Che Cheng (@kiki830621)",
+  "license": "MIT",
+  "homepage": "https://github.com/kiki830621/che-ical-mcp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kiki830621/che-ical-mcp.git"
+  },
+  "keywords": [
+    "calendar",
+    "reminders",
+    "eventkit",
+    "macos",
+    "productivity",
+    "scheduling"
+  ],
+  "platforms": ["macos"],
+  "requirements": {
+    "macos": "13.0"
+  },
+  "permissions": {
+    "calendar": "Full access to macOS Calendar (read/write events)",
+    "reminders": "Full access to macOS Reminders (read/write tasks)"
+  }
+}
