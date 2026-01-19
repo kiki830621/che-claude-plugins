@@ -77,6 +77,16 @@
       },
       "source": "./plugins/che-ical-mcp",
       "category": "productivity"
+    },
+    {
+      "name": "che-duckdb-mcp",
+      "version": "1.0.0",
+      "description": "DuckDB MCP Server - 整合文檔查詢與資料庫操作，14 個工具",
+      "author": {
+        "name": "Che Cheng"
+      },
+      "source": "./plugins/che-duckdb-mcp",
+      "category": "development"
     }
   ]
 }
