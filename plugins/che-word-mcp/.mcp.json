@@ -1,0 +1,7 @@
+{
+  "che-word-mcp": {
+    "type": "stdio",
+    "command": "${CLAUDE_PLUGIN_ROOT}/bin/che-word-mcp-wrapper.sh",
+    "description": "Word MCP server - Complete Word document manipulation with 101 tools"
+  }
+}
