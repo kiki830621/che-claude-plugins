@@ -1,0 +1,7 @@
+{
+  "che-things-mcp": {
+    "type": "stdio",
+    "command": "${CLAUDE_PLUGIN_ROOT}/bin/che-things-mcp-wrapper.sh",
+    "description": "Things 3 MCP server - Task management via AppleScript"
+  }
+}
