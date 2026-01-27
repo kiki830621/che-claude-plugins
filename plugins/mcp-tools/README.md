@@ -28,6 +28,13 @@ MCP Server 開發工具集，提供完整的專案建立、部署發布、升級
       │                   │                       │                   │
   建立完整結構         編譯+打包+發布         從 GitHub 下載       依賴+結構分析
   Swift/Python/TS     GitHub Release         安裝到 ~/bin        升級建議報告
+                      + Plugin（可選）
+                         │
+                         ▼
+                  ┌──────────────┐
+                  │ che-claude-  │
+                  │   plugins    │
+                  └──────────────┘
 ```
 
 ---
@@ -66,7 +73,7 @@ project-name/
 
 ### `/mcp-tools:mcp-deploy [version]`
 
-**部署發布**：編譯 → 打包 MCPB → 建立 GitHub Release。
+**部署發布**：編譯 → 打包 MCPB → 建立 GitHub Release → 可選發布為 Plugin。
 
 ```bash
 /mcp-tools:mcp-deploy
@@ -78,6 +85,7 @@ project-name/
 2. **打包** - 建立 `.mcpb` 套件檔（放在 `mcpb/` 目錄內）
 3. **更新** - manifest.json、CHANGELOG.md、README.md 版本歷史
 4. **發布** - git commit/push + GitHub Release
+5. **Plugin**（可選）- 自動建立 che-claude-plugins 結構並同步
 
 #### MCPB 套件結構
 
@@ -117,7 +125,7 @@ mcpb/
 
 ### `/mcp-tools:mcp-upgrade [focus-area]`
 
-**升級建議**：分析現有專案，提出改進建議。
+**升級建議**：分析現有專案，提出改進建議，完成後可串接部署。
 
 ```bash
 /mcp-tools:mcp-upgrade           # 全面分析
@@ -131,6 +139,8 @@ mcpb/
 - **結構優化** - 缺失檔案（LICENSE、CHANGELOG、.gitattributes）
 - **程式碼品質** - TODO/FIXME、不安全的 try!
 - **新功能建議** - 批次操作、搜尋功能等
+
+完成升級後會詢問是否要直接串接 `mcp-deploy` 進行部署。
 
 ---
 
@@ -255,6 +265,7 @@ open "x-apple.systempreferences:com.apple.preference.security?Privacy_Reminders"
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v1.6.0 | 2026-01-27 | mcp-deploy 新增 Plugin 發布；mcp-upgrade 可串接 deploy |
 | v1.5.0 | 2026-01-16 | 新增 mcp-install 命令：從 GitHub Release 下載安裝 MCP Server |
 | v1.3.0 | 2026-01-16 | 修正 MCPB 套件結構說明，.mcpb 放置於 mcpb/ 目錄內；更新 README 文件 |
 | v1.2.0 | 2026-01-16 | 新增 new-mcp-app、mcp-deploy、mcp-upgrade 三個開發流程命令 |

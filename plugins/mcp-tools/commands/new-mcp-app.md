@@ -281,8 +281,8 @@ async def list_tools() -> list[Tool]:
 async def call_tool(name: str, arguments: dict) -> list[TextContent]:
     if name == "hello_world":
         greeting_name = arguments.get("name", "World")
-        return [TextContent(type="text", text=f"Hello, {greeting_name}!")]
-    raise ValueError(f"Unknown tool: {name}")
+        return [TextContent(type="text", text="Hello, " + greeting_name + "!")]
+    raise ValueError("Unknown tool: " + name)
 
 def main():
     async def run():
@@ -380,9 +380,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   if (request.params.name === "hello_world") {
     const name = (request.params.arguments as any)?.name || "World";
-    return { content: [{ type: "text", text: `Hello, ${name}!` }] };
+    return { content: [{ type: "text", text: "Hello, " + name + "!" }] };
   }
-  throw new Error(`Unknown tool: ${request.params.name}`);
+  throw new Error("Unknown tool: " + request.params.name);
 });
 
 async function main() {
@@ -471,7 +471,7 @@ git add .gitattributes
     "type": "binary",
     "entry_point": "server/{BinaryName}",
     "mcp_config": {
-      "command": "${__dirname}/server/{BinaryName}",
+      "command": "$DIRNAME/server/{BinaryName}",
       "args": [],
       "env": {}
     }

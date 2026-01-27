@@ -347,6 +347,25 @@ python -m pytest
 npm run build
 ```
 
+### Step 4: 串接部署（可選）
+
+如果有執行任何升級項目，使用 AskUserQuestion 詢問：
+
+> 升級完成！是否要繼續部署新版本？
+
+**選項**：
+- **是，繼續部署** - 執行 `/mcp-tools:mcp-deploy`
+- **否，稍後部署** - 結束 upgrade 流程
+
+如果選擇「是」：
+1. 使用 AskUserQuestion 詢問新版本號（建議根據變更類型：功能 → MINOR+1，修復 → PATCH+1）
+2. 呼叫 Skill tool 執行 `mcp-deploy {version}`
+
+```
+Skill: mcp-tools:mcp-deploy
+Args: {suggested-version}
+```
+
 ---
 
 ## 快速參考

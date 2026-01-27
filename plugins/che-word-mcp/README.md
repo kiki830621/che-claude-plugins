@@ -4,7 +4,7 @@
 
 ## 功能概覽
 
-提供 101 個工具，涵蓋 Word 文件的所有操作需求：
+提供 104 個工具，涵蓋 Word 文件的所有操作需求：
 
 ### 文件管理 (6 個)
 - `create_document`, `open_document`, `save_document`, `close_document`
@@ -69,6 +69,11 @@
 - `insert_text_field`, `insert_checkbox`, `insert_dropdown`
 - `insert_equation`, `get_document_properties`, `set_document_properties`
 
+### 學術文件分析 (3 個) - v1.6.0 新增
+- `search_text_with_formatting` - 搜尋文字並顯示格式（粗體、斜體、顏色標記）
+- `list_all_formatted_text` - 列出所有特定格式文字（如所有斜體詞彙）
+- `get_word_count_by_section` - 按區段統計字數（可排除參考文獻）
+
 ## 安裝
 
 ### 1. 編譯 Binary
@@ -110,6 +115,6 @@ save_document: { "doc_id": "mydoc", "path": "/path/to/output.docx" }
 
 ## 版本
 
-- **當前版本**: 1.5.0
-- **專案位置**: `/Users/che/Library/CloudStorage/Dropbox/che_workspace/projects/docs_processing/mcp/che-word-mcp`
+- **當前版本**: 1.6.0
+- **專案位置**: `/Users/che/Library/CloudStorage/Dropbox/che_workspace/projects/mcp/che-word-mcp`
 - **GitHub**: https://github.com/kiki830621/che-word-mcp

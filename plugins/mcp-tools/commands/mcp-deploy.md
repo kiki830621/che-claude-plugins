@@ -337,7 +337,132 @@ chmod +x ~/bin/$BINARY_NAME
 
 ---
 
-## Phase 4: 完成報告
+## Phase 4: 發布為 Claude Code Plugin（可選）
+
+使用 AskUserQuestion 詢問：
+> 是否要同時發布為 Claude Code Plugin？
+
+如果選擇「否」，跳到 Phase 5。
+
+### Step 1: 確認 Plugin 目錄存在
+
+```bash
+PLUGIN_DIR="/Users/che/Library/CloudStorage/Dropbox/che_workspace/projects/che-claude-plugins/plugins/{project-name}"
+mkdir -p "$PLUGIN_DIR/.claude-plugin"
+mkdir -p "$PLUGIN_DIR/bin"
+```
+
+### Step 2: 建立 .mcp.json
+
+```bash
+cat > "$PLUGIN_DIR/.mcp.json" << 'EOF'
+{
+  "{project-name}": {
+    "type": "stdio",
+    "command": "${CLAUDE_PLUGIN_ROOT}/bin/{project-name}-wrapper.sh",
+    "description": "{description}"
+  }
+}
+EOF
+```
+
+### Step 3: 建立 plugin.json
+
+```bash
+cat > "$PLUGIN_DIR/.claude-plugin/plugin.json" << 'EOF'
+{
+  "name": "{project-name}",
+  "version": "{version}",
+  "description": "{description}",
+  "author": { "name": "Che Cheng" },
+  "license": "MIT",
+  "keywords": ["mcp", "{keywords}"]
+}
+EOF
+```
+
+### Step 4: 建立 wrapper script
+
+```bash
+cat > "$PLUGIN_DIR/bin/{project-name}-wrapper.sh" << 'EOF'
+#!/bin/bash
+# Wrapper script to find and execute {BinaryName} binary
+
+LOCATIONS=(
+    "$HOME/bin/{BinaryName}"
+    "/usr/local/bin/{BinaryName}"
+    "$HOME/.local/bin/{BinaryName}"
+)
+
+for loc in "${LOCATIONS[@]}"; do
+    if [[ -x "$loc" ]]; then
+        exec "$loc" "$@"
+    fi
+done
+
+echo "ERROR: {BinaryName} binary not found!" >&2
+echo "Please install from: https://github.com/kiki830621/{project-name}/releases" >&2
+exit 1
+EOF
+chmod +x "$PLUGIN_DIR/bin/{project-name}-wrapper.sh"
+```
+
+### Step 5: 建立 README.md
+
+從專案的 README.md 複製並簡化，或使用 manifest.json 中的資訊生成：
+
+```markdown
+# {project-name}
+
+**{description}**
+
+## 安裝
+
+### 1. 編譯 Binary
+
+\```bash
+cd /path/to/{project-name}
+swift build -c release
+cp .build/release/{BinaryName} ~/bin/
+\```
+
+### 2. 安裝 Plugin
+
+\```bash
+claude /plugin {project-name}
+\```
+
+## 版本
+
+- **當前版本**: {version}
+- **GitHub**: https://github.com/kiki830621/{project-name}
+```
+
+### Step 6: 同步到已安裝的 plugins 目錄
+
+```bash
+INSTALLED_DIR="$HOME/.claude/plugins/marketplaces/che-claude-plugins/plugins/{project-name}"
+mkdir -p "$INSTALLED_DIR/.claude-plugin"
+mkdir -p "$INSTALLED_DIR/bin"
+cp "$PLUGIN_DIR/.mcp.json" "$INSTALLED_DIR/.mcp.json"
+cp "$PLUGIN_DIR/.claude-plugin/plugin.json" "$INSTALLED_DIR/.claude-plugin/plugin.json"
+cp "$PLUGIN_DIR/bin/{project-name}-wrapper.sh" "$INSTALLED_DIR/bin/"
+```
+
+### Step 7: 提交 Plugin 變更
+
+```bash
+cd /Users/che/Library/CloudStorage/Dropbox/che_workspace/projects/che-claude-plugins
+git add plugins/{project-name}
+git commit -m "Update {project-name} plugin to v{version}
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+git push origin main
+```
+
+---
+
+## Phase 5: 完成報告
 
 ```markdown
 # MCP 部署完成
@@ -357,8 +482,13 @@ chmod +x ~/bin/$BINARY_NAME
 ## 本地安裝
 - Binary 已複製到: `~/bin/{BinaryName}`
 
+## Claude Code Plugin（如有發布）
+- Plugin 目錄: `che-claude-plugins/plugins/{project-name}`
+- 已同步到: `~/.claude/plugins/marketplaces/che-claude-plugins/plugins/{project-name}`
+
 ## 下一步
 - 測試: `claude mcp list` 確認 MCP 已連線
+- 重啟 Claude Code 以載入新版本
 ```
 
 ---
