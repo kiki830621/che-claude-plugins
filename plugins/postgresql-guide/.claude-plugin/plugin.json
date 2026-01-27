@@ -1,0 +1,8 @@
+{
+  "name": "postgresql-guide",
+  "version": "1.0.0",
+  "description": "Auto-triggered Skill for querying PostgreSQL official documentation. Forces WebFetch instead of relying on memory.",
+  "author": { "name": "Che Cheng" },
+  "license": "MIT",
+  "keywords": ["postgresql", "postgres", "sql", "database", "documentation"]
+}
