@@ -6,7 +6,11 @@ description: >-
   localStorage and cookies permanently. Also use when agent-browser fails due to session/auth
   issues, or when the user explicitly asks to use Safari. Triggers on: "login to site",
   "automate with Safari", "use Safari", "session expired with agent-browser", "Plaud upload",
-  or any website automation where persistent auth is needed.
+  or any website automation where persistent auth is needed. ALSO use for reading Safari's
+  local on-disk data — browsing history, bookmarks / Reading List, iCloud tabs from other
+  devices, and downloads. Triggers on: "what did I look at", "find that page I saw",
+  "I forgot the URL", "search my history", "my bookmarks", "tabs on my other Mac/iPhone",
+  "what did I download".
 allowed-tools:
   - Bash(safari-browser:*)
   - Bash(safari-browser *)
@@ -298,6 +302,36 @@ safari-browser mouse move <x> <y>
 safari-browser mouse down / up / wheel <dy>
 ```
 
+### Local Safari Data (on-disk — the only way to answer "what did I look at before")
+
+Every other command drives the **running** browser. These four read Safari's own files under
+`~/Library/Safari/`, so they work with Safari closed and answer questions about the past.
+
+```bash
+safari-browser history --search agent --limit 50   # browsing history (default limit applies)
+safari-browser history --since 2026-08-01
+safari-browser bookmarks --search swift            # bookmarks + Reading List
+safari-browser cloud-tabs                          # tabs open on your other devices
+safari-browser downloads
+```
+
+All four take `--json`. Explanatory text goes to stderr, data rows to stdout — so
+`safari-browser history 2>/dev/null` is already clean, parseable output, and `--json` on an
+empty result prints `[]` rather than nothing.
+
+**These require Full Disk Access, and the grant is bound to the binary's code signature —
+not to its path.** An ad-hoc signed binary (what `make install` produces) cannot hold a
+durable FDA grant, so the commands detect their own signing state and print guidance specific
+to it. Follow what the error says rather than assuming "add it in System Settings" will stick.
+
+A missing source file is **not** an error: `cloud-tabs` on a Mac that never enabled iCloud tab
+syncing exits 0 with a note on stderr. That is a configuration state, not a failure.
+
+**Finding a page you cannot name.** Guessing keywords repeatedly works badly. What works is
+narrowing to a set a human can scan in one pass — dedupe by title, list all of it, read with
+your eyes. If history misses, the page may be in `bookmarks` (including Reading List) or
+`cloud-tabs`; those are separate stores, not fallbacks of one another.
+
 ## Common Patterns
 
 ### Login-Required Site (e.g., Plaud)
@@ -359,6 +393,7 @@ Use between every `safari-browser` command when operating sensitive sites. Never
 - **JS-based snapshot** — `snapshot` uses DOM scanning (not CDP accessibility tree), 90% as effective
 - **Automation permission required** — first run prompts for Terminal → Safari access (System Settings → Privacy & Security → Automation)
 - **upload smart default** — uses native file dialog when Accessibility permission is granted; auto-falls back to JS DataTransfer otherwise. Force with `--js` or `--native`
+- **Local-data commands require Full Disk Access** — `history` / `bookmarks` / `cloud-tabs` / `downloads` read `~/Library/Safari/`. TCC binds the grant to the code signature, so an ad-hoc signed binary cannot hold one durably; the commands say so explicitly rather than failing opaquely
 - **pdf requires Accessibility permission** — System Settings → Privacy & Security → Accessibility (uses clipboard paste + AXDefault button click)
 
 ## Playbooks
