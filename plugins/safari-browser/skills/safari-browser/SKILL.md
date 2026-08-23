@@ -310,7 +310,8 @@ Every other command drives the **running** browser. These four read Safari's own
 ```bash
 safari-browser history --search agent --limit 50   # browsing history (default limit applies)
 safari-browser history --since 2026-08-01
-safari-browser bookmarks --search swift            # bookmarks + Reading List
+safari-browser bookmarks --folder AI               # bookmarks + Reading List (folder filter)
+safari-browser bookmarks --json | jq '.[] | select(.title|test("swift";"i"))'   # no --search: filter via jq
 safari-browser cloud-tabs                          # tabs open on your other devices
 safari-browser downloads
 ```
