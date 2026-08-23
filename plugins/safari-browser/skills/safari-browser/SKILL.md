@@ -381,7 +381,7 @@ Use between every `safari-browser` command when operating sensitive sites. Never
 
 ## Troubleshooting
 
-- **Binary killed (exit 137 / SIGKILL)** — macOS Sequoia kills unsigned binaries that call osascript. Fix: `codesign --force --sign - ~/bin/safari-browser`. This is done automatically by `make install`.
+- **Binary killed (exit 137 / SIGKILL)** — two different causes, same symptom. (a) *Unsigned binary*: macOS kills unsigned binaries that call osascript. Fix: `codesign --force --sign - ~/bin/safari-browser`, which `make install` does for you. (b) *Reused inode*: an older `make install` copied over a path still held open by a running process, and macOS caches signature validation per inode — so re-signing does NOT help, because it writes the same inode. Fix: `rm -f ~/bin/safari-browser` then reinstall. Current `make install` / `make install-signed` do the `rm -f` themselves (safari-browser#121); this bites only binaries installed by an older checkout.
 - **Large JS output returns empty** — Safari `do JavaScript` silently drops results >~1MB. Use `safari-browser js --large "..."` or `--output /tmp/result.txt` for chunked read.
 
 ## Limitations
@@ -394,7 +394,7 @@ Use between every `safari-browser` command when operating sensitive sites. Never
 - **JS-based snapshot** — `snapshot` uses DOM scanning (not CDP accessibility tree), 90% as effective
 - **Automation permission required** — first run prompts for Terminal → Safari access (System Settings → Privacy & Security → Automation)
 - **upload smart default** — uses native file dialog when Accessibility permission is granted; auto-falls back to JS DataTransfer otherwise. Force with `--js` or `--native`
-- **Local-data commands require Full Disk Access** — `history` / `bookmarks` / `cloud-tabs` / `downloads` read `~/Library/Safari/`. TCC binds the grant to the code signature, so an ad-hoc signed binary cannot hold one durably; the commands say so explicitly rather than failing opaquely
+- **Local-data commands require Full Disk Access** — `history` / `bookmarks` / `cloud-tabs` / `downloads` read `~/Library/Safari/`. TCC binds the grant to the binary's *designated requirement*, and an ad-hoc signature's requirement **is** the content hash — so the grant stops applying after every rebuild, silently. Install with `DEVELOPER_ID=<cert-sha1> make install-signed` (not `make install`) for a grant that survives; `make verify-install-signature` reports which state the installed binary is in. The commands say which case you are in rather than failing opaquely (safari-browser#119)
 - **pdf requires Accessibility permission** — System Settings → Privacy & Security → Accessibility (uses clipboard paste + AXDefault button click)
 
 ## Playbooks

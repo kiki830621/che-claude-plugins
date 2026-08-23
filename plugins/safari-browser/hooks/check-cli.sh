@@ -9,11 +9,14 @@ if [[ -x "$INSTALL_PATH" ]]; then
     echo "✓ $BINARY_NAME installed: $INSTALL_PATH"
 else
     echo "⚠️  $BINARY_NAME not found at $INSTALL_PATH"
-    if [[ -d "$SOURCE_DIR" ]]; then
-        echo "   Build and install: cd $SOURCE_DIR && make install"
-    else
-        echo "   Clone and install:"
+    if [[ ! -d "$SOURCE_DIR" ]]; then
+        echo "   Clone first:"
         echo "     git clone git@github.com:PsychQuant/safari-browser.git $SOURCE_DIR"
-        echo "     cd $SOURCE_DIR && make install"
     fi
+    echo "   Then, in $SOURCE_DIR:"
+    echo "     make install                                  # ad-hoc signed"
+    echo "     DEVELOPER_ID=<cert-sha1> make install-signed   # Developer ID signed"
+    echo "   Use install-signed if you want history / bookmarks / cloud-tabs /"
+    echo "   downloads: those need Full Disk Access, and an ad-hoc grant stops"
+    echo "   applying after every rebuild (safari-browser#119)."
 fi
